@@ -2,6 +2,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 import plotly.graph_objects as go
+
 # ---------- Paleta Atlético Nacional (modo oscuro) ----------
 VERDE = "#2FBF5F"
 VERDE_BRILLO = "#5CE08A"
@@ -11,20 +12,19 @@ GRISES = "#7FA890"
 TEXTO = "#EAF5EE"
 SECUENCIA = [VERDE, VERDE_BRILLO, DORADO, GRISES, "#9AD9B0"]
 
-def estilo_nacional(fig, sin_leyenda=False):
+def estilo_nacional(fig, sin_leyenda=False, titulo_leyenda=None):
     fig.update_layout(
         colorway=SECUENCIA,
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
         font_color=TEXTO,
         title_font_color=TEXTO,
-        legend_title_text="",
         showlegend=not sin_leyenda,
     )
+    if titulo_leyenda is not None:
+        fig.update_layout(legend_title_text=titulo_leyenda)
     fig.update_xaxes(gridcolor="#1E4230", zeroline=False)
     fig.update_yaxes(gridcolor="#1E4230", zeroline=False)
-    fig.update_layout(legend_title_text="Categoría")
-    fig.update_layout(legend_title_text="Indicador")
     return fig
 
 st.set_page_config(page_title="Demo Formativo", layout="wide")
@@ -59,7 +59,7 @@ c4.metric("Minutos último semestre", int(ult["minutos"]))
 st.subheader("Minutos por semestre")
 fig = px.bar(d, x="semestre", y="minutos", color="categoria",
              color_discrete_sequence=SECUENCIA)
-st.plotly_chart(estilo_nacional(fig), width='stretch')
+st.plotly_chart(estilo_nacional(fig, titulo_leyenda="Categoría"), width='stretch')
 
 st.subheader("Evolución física y técnica (percentil vs. su categoría)")
 mets = st.multiselect("Indicadores",
@@ -79,7 +79,7 @@ if mets:
     fig = px.line(dd, x="semestre", y="percentil", color="indicador",
                   markers=True, color_discrete_sequence=SECUENCIA)
     fig.update_yaxes(range=[0, 100])
-    st.plotly_chart(estilo_nacional(fig), width='stretch')
+    st.plotly_chart(estilo_nacional(fig, titulo_leyenda="Indicador"), width='stretch')
 
 st.subheader("Notas del cuerpo técnico")
 st.table(d[["semestre", "categoria", "nota"]].reset_index(drop=True))
@@ -216,5 +216,5 @@ cols = ["posicion", "categoria", "edad", "minutos",
 tabla = raw.loc[[jA, jB], cols].T
 tabla.columns = [jA, jB]
 st.dataframe(tabla, width='stretch')
-st.caption("Radar = percentiles dentro de su categoría. Tabla = valores crудos. "
+st.caption("Radar = percentiles dentro de su categoría. Tabla = valores crudos. "
            "Herramienta directa para decidir entre dos jugadores de la misma posición.")
