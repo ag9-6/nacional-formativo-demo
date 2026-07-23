@@ -23,6 +23,8 @@ def estilo_nacional(fig, sin_leyenda=False):
     )
     fig.update_xaxes(gridcolor="#1E4230", zeroline=False)
     fig.update_yaxes(gridcolor="#1E4230", zeroline=False)
+    fig.update_layout(legend_title_text="Categoría")
+    fig.update_layout(legend_title_text="Indicador")
     return fig
 
 st.set_page_config(page_title="Demo Formativo", layout="wide")
